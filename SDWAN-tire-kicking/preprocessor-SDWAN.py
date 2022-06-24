@@ -3,13 +3,21 @@
 
 from dataclasses import dataclass
 from unipath import Path
+from jinja2 import Template
 import json
 import jinja2
 import re 
+import requests
 
 
-file_directory = Path(r"C:\Users\estahl\CodingProjects\lubensDEMONSTRATION\Sample-unzipped")
+# TEMPORARY 
+# from template_engine import create_doc_outline
 
+# eventually this will have to receive an API 
+# 6/24 for now we gotta make it take a single yaml file instead of going thru a directory.
+file_directory = Path(r"C:\Users\estahl\projects\SDWAN-tire-kicking\Sample-unzipped")
+
+# probably don't need this
 class TableCount(object):
     def __init__(self, start_value=1):
         self.value = start_value
@@ -29,6 +37,7 @@ def j_dumps(raw_text):
     json_txt = json.dumps(raw_text)
     return json_txt
 
+# R: WE ARE NO LONGER GETTING A ZIP FILE, IT'S GONNA BE ONE BIG YAML FILE.
 def load_data(files_path):
     loaded_data = {}
     for file_item in file_directory.listdir():
@@ -42,13 +51,32 @@ def load_data(files_path):
 def parse_data(loaded_data):
     return loaded_data
 
-returned = load_data(file_directory)
- 
-print(type(returned))
+# this is a python dictionary 
+full_data = load_data(file_directory)
+
+# print(full_data)
+print(type(full_data))  
+# templated = create_doc_outline(full_data)
+
+# Sends processed data to the API 
+url = 'http://127.0.0.1:5000/to-template'
+
+payload = {
+    'raw_data': full_data,
+    'product': 'SD-WAN',
+    'replacement_values': '[ PLACEHOLDER FOR THE DOC ENGINE ]',
+    'gdoc_type': True
+}
+
+response = requests.post(url, data=payload)
+
+#print(response.text)
+
+
 
 '''
 API_VALUES_RECEIVED = {
-    'raw_data': 'The File/Folder with all the data',
+    'raw_data': 'the yaml file with all the data',
     'product': 'SD-WAN', 
     'replacement_values':  <for the doc engine; we don't really have to care>
     'gdoc_type':  true

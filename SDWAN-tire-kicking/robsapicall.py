@@ -17,6 +17,4 @@ response = requests.post(url, data=payload)
 
 print(response.text)
 
-
-# placeholder! Delete later
-
+ 
